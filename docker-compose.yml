@@ -1,0 +1,46 @@
+version: "3.8"
+services:
+ chat:
+    build: ./chatAPI
+    environment:
+      - STORAGE=mysql
+      - MYSQL_HOST=database
+      - MYSQL_USER=${NAAM}
+      - MYSQL_PWD=${NOT_A_PASS}
+      - MYSQL_DB=db
+
+    
+
+ auth:
+    build: ./authAPI
+
+
+ frontend:
+    image: nginx:1.22
+    volumes:
+      - ./frontend/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./frontend:/var/www/static/:ro
+    ports:
+      - "80:8000"
+
+
+
+ database:
+    image: mysql:8.0.29-debian
+    ports: 
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - STORAGE=mysql
+      - MYSQL_USER=${NAAM}
+      - MYSQL_PASSWORD=${NOT_A_PASS}
+      - MYSQL_DATABASE=db
+      - MYSQL_ROOT_PASSWORD=${ROOT_PASS}
+
+volumes:
+    db_data:
+
+
+
